@@ -39,7 +39,7 @@ var arraySum = function (array) {
     }
     let arr = array.flat().flat();
 
-    return arr[0] + arraySum(arr.slice(1))
+    return arr[0] + arraySum(arr.slice(1));
 };
 
 arraySum([1, [2, 3], [[4]], 5]);
@@ -51,7 +51,7 @@ var isEven = function (n) {
     return isEven(Math.abs(n) - 2);
 };
 
-isEven(5)
+isEven(5);
 
 // 5. Sum all integers below a given integer.
 // sumBelow(10); // 45
@@ -62,24 +62,20 @@ isEven(5)
 
 
 var sumBelow = function (n) {
-    let total = [];
+    let sum = 0;
 
-    function adder(x) {
-        if (x === 0) {
-            return
-        }
-
-        total.push(x - 1);
-        adder(x - 1);
+    if (n === 0) {
+        sum = sum + 0;
+    }
+    else if (n > 0) {
+        sum = sum + (n - 1) + sumBelow(n - 1);
+    }
+    else {
+        sum = sum + (n + 1) + sumBelow(n + 1);
     }
 
-    adder(n);
-    return total.reduce((acc, val) => {
-        return acc + val;
-    });
-}
-
-console.log(sumBelow(10))
+    return sum;
+};
 
 // 6. Get the integers within a range (x, y).
 // range(2,9); // [3,4,5,6,7,8]
@@ -98,18 +94,26 @@ console.log(sumBelow(10))
 //     return inter ? array : array.reverse();
 // }
 
-function range(x, y) {
+var range = function (x, y) {
 
-    if (x + 1 >= y) {
-        return [];
-    } else {
-        temp = range(x, y - 1);
-        temp.push(y - 1);
-        return temp;
+    let check = true;
+
+    if (x > y) {
+        let temp = x;
+        x = y;
+        y = temp;
+        check = false;
     }
-}
+    if (x === y) return [];
+    if (x + 1 === y) return [];
 
-console.log(range(2, 9));
+    let array = range(x, y - 1);
+    array.push(y - 1);
+
+    if (check === true) return array;
+    if (!check) return array.reverse();
+
+};
 
 
 // 7. Compute the exponent of a number.
@@ -118,18 +122,14 @@ console.log(range(2, 9));
 // exponent(4,3); // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
 var exponent = function (base, exp) {
-    if (exp === 0) return 1;
-    let temp = 0;
+    return exp === 0 ? 1 :
+        exp > 0 ? base * exponent(base, exp - 1) :
+            exponent(base, exp + 1) / base;
+};
 
-    if (exp < 0) {
-        return base * exponent(base, -exp - 1);
-    } else {
-        return base * exponent(base, exp - 1);
-    }
 
-}
 
-exponent(4, -3)
+exponent(4, -3);
 
 
 
@@ -167,7 +167,7 @@ var palindrome = function (string) {
     const cleanString = string.replace(/\W/g, "").toLowerCase();
     if (cleanString.length === 1) return true;
     if (cleanString.length === 2) return cleanString[0] === cleanString[1];
-    if (cleanString[0] === cleanString.slice(-1)) return palindrome(cleanString.slice(1, -1))
+    if (cleanString[0] === cleanString.slice(-1)) return palindrome(cleanString.slice(1, -1));
     return false;
 };
 
@@ -177,15 +177,10 @@ var palindrome = function (string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function (x, y) {
-    var result = 0;
-    if (x === 0 && y === 0) {
-        return NaN;
-    } else if (x < y) {
-        return x;
-    } else {
-        result = modulo(x - y, y);
-    }
-    return result;
+    return (x === 0 && y === 0) ? NaN :
+        y < 0 ? modulo(x, -y) :
+            x < 0 ? -modulo(-x, y) :
+                x < y ? x : modulo(x - y, y);
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator or
@@ -197,20 +192,10 @@ var modulo = function (x, y) {
 // then added up values
 
 var multiply = function (x, y) {
-    if (x === 0 || y === 0) {
-        return 0
-    } else if (y < 0) {
-        return -x + multiply(x, y + 1);
-    } else {
-        return x + multiply(x, y - 1);
-        // will call a total of 5 times, adding it to x upon returning
-        // 5-4: (-3)  
-        // 5-3: (-3)  
-        // 5-2: (-3)  
-        // 5-1: (-3)  
-        // 5-0: (-3)
-        // -15
-    }
+    return y === 0 ? 0 :
+        x < 0 ? -multiply(-x, y) :
+            y < 0 ? -multiply(x, -y) :
+                multiply(x, y - 1) + x;
 };
 
 multiply(-3, 5);
@@ -225,16 +210,12 @@ multiply(-3, 5);
 // 3 / 0 == infinite loop
 // 25 /5 == (1) 20 / 5, (2) 15/5, (3) 10 /5, (4) 5/5, (5) 0/5
 let divide = function (x, y) {
-    if (y === 0) {
-        return 0;
-    } else if (x < y) {
-        return 0
-    } else if (x === y) {
-        return 1
-    } else {
-        return 1 + divide(x - y, y)
-    }
-}
+    return (x === 0 && y === 0) ? NaN :
+        x < 0 ? -divide(-x, y) :
+            y < 0 ? -divide(x, -y) :
+                x < y ? 0 :
+                    divide(x - y, y) + 1;
+};
 
 console.log(divide(25, 5));
 
@@ -248,88 +229,66 @@ var gcd = function (x, y) {
         return null;
     }
     if (y !== 0) {
-        return gcd(y, x % y)
+        return gcd(y, x % y);
     } else {
-        return x
+        return x;
     }
-}
+};
 
-console.log(gcd(4, 36))
+console.log(gcd(4, 36));
 
 // 15. Write a function that compares each character of two strings and returns true if
 // both are identical.
 // compareStr('house', 'houses') // false
 // compareStr('tomato', 'tomato') // true
 var compareStr = function (str1, str2) {
-    if (str1.length === 0 && str2.length === 0) return true
-    if (str1.length === 0 && str2.length !== 0) return false
-    if (str1.length !== 0 && str2.length === 0) return false
+    if (str1.length === 0 && str2.length === 0) return true;
+    if (str1.length === 0 && str2.length !== 0) return false;
+    if (str1.length !== 0 && str2.length === 0) return false;
     if (str1[0] !== str2[0]) return false;
 
-    return compareStr(str1.slice(1, str1.length), str2.slice(1, str2.length))
+    return compareStr(str1.slice(1, str1.length), str2.slice(1, str2.length));
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
 // occupies an index of the array.
 var createArray = function (str) {
-    let total = []
-
-    function pushIn(string) {
-        if (string.length === 0) {
-            return
-        }
-        total.push(string[0])
-        string = string.slice(1);
-        return pushIn(string);
-    }
-
-    pushIn(str)
-    return total;
-
+    if (str.length === 1) return [str[0]];
+    let arrayItems = createArray(str.substring(1));
+    arrayItems.unshift(str[0]);
+    return arrayItems;
 };
 
-console.log(createArray('timmothy'))
+console.log(createArray('timmothy'));
 
 // 17. Reverse the order of an array
 var reverseArr = function (array) {
-    let total = [];
+    if (array.length === 1) return [array[0]];
 
-    function reversed(arr) {
-        if (arr.length === 0) {
-            return;
-        }
-        total.push(arr[arr.length - 1])
-        arr.pop();
-        reversed(arr)
-    }
+    let arrayItems = reverseArr(array.slice(1, array.length));
 
-    reversed(array);
-    return total;
+    arrayItems.push(array[0]);
+
+    return arrayItems;
 
 };
 
-console.log(reverseArr([0, 1, 2, 3, 4, 5, "bob"]))
+console.log(reverseArr([0, 1, 2, 3, 4, 5, "bob"]));
 
 // 18. Create a new array with a given value and length.
 // buildList(0,5) // [0,0,0,0,0]
 // buildList(7,3) // [7,7,7]
 var buildList = function (value, length) {
-    let total = [];
+    if (length === 0) return [];
 
-    function builder(val, len) {
-        if (total.length === len) {
-            return
-        }
-        total.push(val)
-        builder(val, len)
-    }
+    let arrayItems = buildList(value, length - 1);
 
-    builder(value, length)
-    return total;
+    arrayItems.push(value);
 
-}
+    return arrayItems;
+};
 
-console.log(buildList(0, 5))
+console.log(buildList(0, 5));
 
 // 19. Implement FizzBuzz. Given integer n, return an array of the string representations of 1 to n.
 // For multiples of three, output 'Fizz' instead of the number.
